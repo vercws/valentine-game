@@ -3,6 +3,7 @@ const gameScreen = document.getElementById('gameScreen');
 const endScreen = document.getElementById('endScreen');
 const playButton = document.getElementById('playButton');
 const goBackButton = document.getElementById('goBackButton');
+const muteButton = document.getElementById('checkboxInput');
 
 const pressSound = document.getElementById('pressSound');
 const pressButton = document.getElementById('pressButton');
@@ -18,39 +19,37 @@ let waitingForAnswer = false;
 let shouldPress = false;
 let activeIntervals = [];
 let activeTimeouts = [];
+let isMuted = false;
 
 
 
 const commands = [
     //----- NEW COMMANDS -----
-    { text: "Remember this number: \n 4", answer: false, time : 4 },
-    { text: "Quick! Don't press!", answer: false, time: 3 },
-
-    { text: "Press if background is your favorite color", colorCheck: true, time: 8, favColor: "purple" },
-
-    { text: "Solve 4 * 3 - 3 presses", presses: (4*3)-3, time: 10 }, // DONE
-    { text: "Press!", presses: 4, num: true, time: 7 }, // DONE
-    { text: "Press if you love donuts", donut: true, time: 7 }, // DONE
-
-    { text: "Press at least 15 times", minPresses: 15, time: 6 }, // DONE
     { text: "Press if you love me", answer: true, time: 3 },
-    { text: "Press if you see a hyrax", hyrax: true, time: 7 },
-    { text: "Don't touch the button!", strict: true, time: 5 },
-    { text: "Press exactly 3 times", presses: 3 },
-    { text: "The month we got together = press", presses: 9, time: 7 },
-    { text: "Wait...", answer: false, time : 4 },
-    { text: "Press twice!", presses: 2 },
-    { text: "Press if I'm cute", answer: true },
-    { text: "Press if hearts are even", hearts: true },
-    { text: "Press once", presses: 1 },
-    { text: "Do nothing", answer: false }, // do zmiany
-    { 
-    text: "Press if today is Valentine's", 
-    answer: (new Date().getMonth() === 1 && new Date().getDate() === 14) ? true : false 
-    },
-    { text: "Don't press!", answer: false },
-    { text: "Press if you want a kiss", answer: true },
-    { text: "Last one: PRESS AT LEAST 100 TIMES!", minPresses: 50, time: 10 }, // DONE
+    // { text: "Remember this number: 7", answer: false, time : 4 },
+    // { text: "Quick! Don't press!", answer: false, time: 3 },
+    // { text: "Press if background is your favorite color", colorCheck: true, time: 8, favColor: "purple" },
+    // { text: "Solve 4 * 3 - 3 presses", presses: (4*3)-3, time: 10 }, // DONE
+    // { text: "Press if you love donuts", donut: true, time: 7 }, // DONE
+    // { text: "Press at least 15 times", minPresses: 15, time: 6 }, // DONE
+    // { text: "Press!", presses: 7, num: true, time: 7 }, // DONE
+    // { text: "Don't touch the button!", strict: true, time: 5 },
+    // { text: "Press exactly 3 times", presses: 3 },
+    // { text: "The month we got together = press", presses: 9, time: 7 },
+    // { text: "Wait...", answer: false, time : 4 },
+    // { text: "Press if you see a hyrax", hyrax: true, time: 7 },
+    // { text: "Press twice!", presses: 2, time: 3 },
+    // { text: "Press if I'm cute", answer: true },
+    // { text: "Press if hearts are even", hearts: true },
+    // { text: "Press once", presses: 1 },
+    // { text: "Do nothing", answer: false }, // do zmiany
+    // { 
+    // text: "Press if today is Valentine's", 
+    // answer: (new Date().getMonth() === 1 && new Date().getDate() === 14) ? true : false 
+    // },
+    // { text: "Don't press!", answer: false },
+    // { text: "Press if you want a kiss", answer: true },
+    // { text: "Last one: PRESS AT LEAST 100 TIMES!", minPresses: 50, time: 10 }, // DONE
 
 ];
 
@@ -76,6 +75,18 @@ goBackButton.addEventListener('click', () => {
 
 });
 
+muteButton.addEventListener('click', () => {
+    const bgMusic = document.getElementById('bgMusic');
+    
+    if (isMuted) {
+        bgMusic.muted = false;
+        isMuted = false;
+    } else {
+        bgMusic.muted = true;
+        isMuted = true;
+    }
+});
+
 pressButton.addEventListener('click', () => {
     if (!waitingForAnswer) return;
 
@@ -98,6 +109,9 @@ pressButton.addEventListener('click', () => {
 });
 
 function gameStart() {
+    const bgMusic = document.getElementById('bgMusic');
+    bgMusic.volume = 0.4; // 30% volume so it's not too loud
+    bgMusic.play();
     currentCommand = 0;
     nextCommand();
 }
@@ -194,7 +208,7 @@ function nextCommand() {
 
         function showReminderPopup() {
         const popup = document.createElement('div');
-        popup.textContent = "Do you remember how many times?";
+        popup.textContent = "Do you remember the number?";
         popup.style.position = "fixed";
         popup.style.top = "20%";
         popup.style.left = "50%";
@@ -264,7 +278,6 @@ else if (cmd.colorCheck) {
     commandText.textContent = cmd.text;
     pressButton.textContent = "WAIT...";
     cmd.userPressed = false; // Did the user press at the right time?
-    let elapsed = 0;
     const colors = ["red","yellow","purple","pink","cyan","lime","teal","blue","orange"];
 
     // Shuffle colors (Fisher–Yates)
@@ -274,17 +287,38 @@ else if (cmd.colorCheck) {
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
 
-    // Ensure purple is NOT last
-    if (shuffled[shuffled.length - 1] === cmd.favColor) {
-        const swapIndex = Math.floor(Math.random() * (shuffled.length - 1));
-        [shuffled[shuffled.length - 1], shuffled[swapIndex]] =
-            [shuffled[swapIndex], shuffled[shuffled.length - 1]];
-    }
-
+   
     let index = 0;
     cmd.favAppearances = 0;
     cmd.userPresses = 0;
     cmd.wrongPress = false;
+    cmd.currentColorIsFav = false;
+
+    let isProcessing = false;
+
+
+    // Track presses
+    function pressHandler(e) {
+        e.stopPropagation(); // Stop the event from bubbling
+
+        if (isProcessing) return; // Prevent double clicks
+        isProcessing = true;
+
+        if (cmd.currentColorIsFav) {
+            cmd.userPresses++;
+        }
+        else {
+        cmd.wrongPress = true; // pressed when not favorite color
+
+        // Reset flag after a short delay
+        setTimeout(() => {
+            isProcessing = false;
+        }, 200);
+    }
+    }
+
+    pressButton.addEventListener("click", pressHandler);
+
 
     const colorInterval = setInterval(() => {
         const color = shuffled[index];
@@ -304,31 +338,17 @@ else if (cmd.colorCheck) {
         // Stop when colors end or time runs out
         if (index >= shuffled.length || index >= cmd.time) {
             clearInterval(colorInterval);
+            cmd.currentColorIsFav = false;
         }
     }, 1000);
 
-
-    // Track presses
-    function pressHandler() {
-        if (cmd.currentColorIsFav) {
-            cmd.userPresses++;
-        }
-        else {
-        cmd.wrongPress = true; // pressed when not favorite color
-    }
-    }
-
-    pressButton.addEventListener("click", pressHandler);
 
     // Save cleanup function to stop interval and listener
     cmd._cleanup = () => {
         clearInterval(colorInterval);
         pressButton.removeEventListener("click", pressHandler);
         document.body.style.backgroundColor = originalBg; // reset immediately
-        cmd.userPresses = 0;
-        cmd.favAppearances = 0;
-        cmd.wrongPress = false;
-    };
+        };
 }
 
 // MATH COMMAND
@@ -429,17 +449,20 @@ function checkResult() {
         success = (cmd.userPressed === shouldPress);
     }
 
-else if (cmd.colorCheck) {
-    if (cmd.favAppearances === 0) {
+    else if (cmd.colorCheck) {
+        console.log("Fav color appearances:", cmd.favAppearances);
+    console.log("User presses:", cmd.userPresses);
+    console.log("Wrong press:", cmd.wrongPress);
+        if (cmd.favAppearances === 0) {
         // If favorite color never appeared, user must not press
-        success = !cmd.wrongPress && cmd.userPresses === 0;
-    } else {
+            success = cmd.userPresses === 0;
+        } else {
         // Otherwise presses must match appearances
-        success = (cmd.userPresses === cmd.favAppearances) && !cmd.wrongPress;
-    }
+            success = (cmd.userPresses === cmd.favAppearances) && !cmd.wrongPress;
+        }
 
-    document.body.style.backgroundColor = originalBg;
-}
+        document.body.style.backgroundColor = originalBg;
+    }
 
     // --- HOLD ---
    else if (cmd.hold) {
@@ -542,13 +565,15 @@ function createConfetti() {
     }
 }
 
-// Call in endGame():
-function endGame() {
-    // ... your existing code ...
-    createConfetti();
-}
 
 function endGame() {
+    // Play win sound
+    const winSound = document.getElementById('winSound');
+    winSound.play();
+
+    //const bgMusic = document.getElementById('bgMusic');
+    //bgMusic.pause();
+
     // Hide game screen
     gameScreen.classList.add('hidden');
     
@@ -605,8 +630,11 @@ function endGame() {
         updateDots();
     }, 3000);
 
-
+    
     createConfetti();
+    setInterval(createConfetti, 5000); // Then every 5 seconds
+
+    
 }
 
 /* ---------------------------
