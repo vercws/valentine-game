@@ -26,30 +26,30 @@ let isMuted = false;
 const commands = [
     //----- NEW COMMANDS -----
     { text: "Press if you love me", answer: true, time: 3 },
-    // { text: "Remember this number: 7", answer: false, time : 4 },
-    // { text: "Quick! Don't press!", answer: false, time: 3 },
-    // { text: "Press if background is your favorite color", colorCheck: true, time: 8, favColor: "purple" },
-    // { text: "Solve 4 * 3 - 3 presses", presses: (4*3)-3, time: 10 }, // DONE
-    // { text: "Press if you love donuts", donut: true, time: 7 }, // DONE
-    // { text: "Press at least 15 times", minPresses: 15, time: 6 }, // DONE
-    // { text: "Press!", presses: 7, num: true, time: 7 }, // DONE
-    // { text: "Don't touch the button!", strict: true, time: 5 },
-    // { text: "Press exactly 3 times", presses: 3 },
-    // { text: "The month we got together = press", presses: 9, time: 7 },
-    // { text: "Wait...", answer: false, time : 4 },
-    // { text: "Press if you see a hyrax", hyrax: true, time: 7 },
-    // { text: "Press twice!", presses: 2, time: 3 },
-    // { text: "Press if I'm cute", answer: true },
-    // { text: "Press if hearts are even", hearts: true },
-    // { text: "Press once", presses: 1 },
-    // { text: "Do nothing", answer: false }, // do zmiany
-    // { 
-    // text: "Press if today is Valentine's", 
-    // answer: (new Date().getMonth() === 1 && new Date().getDate() === 14) ? true : false 
-    // },
-    // { text: "Don't press!", answer: false },
-    // { text: "Press if you want a kiss", answer: true },
-    // { text: "Last one: PRESS AT LEAST 100 TIMES!", minPresses: 50, time: 10 }, // DONE
+    { text: "Remember this number: 7", answer: false, time : 4 },
+    { text: "Quick! Don't press!", answer: false, time: 3 },
+    { text: "Press if background is your favorite color", colorCheck: true, time: 8, favColor: "purple" },
+    { text: "Solve 4 * 3 - 3 presses", presses: (4*3)-3, time: 10 }, // DONE
+    { text: "Press if you love donuts", donut: true, time: 7 }, // DONE
+    { text: "Press at least 15 times", minPresses: 15, time: 6 }, // DONE
+    { text: "Press!", presses: 7, num: true, time: 7 }, // DONE
+    { text: "Don't touch the button!", strict: true, time: 5 },
+    { text: "Press exactly 3 times", presses: 3 },
+    { text: "The month we got together = press", presses: 9, time: 7 },
+    { text: "Wait...", answer: false, time : 4 },
+    { text: "Press if you see a hyrax", hyrax: true, time: 7 },
+    { text: "Press twice!", presses: 2, time: 3 },
+    { text: "Press if I'm cute", answer: true },
+    { text: "Press if hearts are even", hearts: true },
+    { text: "Press once", presses: 1 },
+    { text: "Do nothing", answer: false }, // do zmiany
+    { 
+    text: "Press if today is Valentine's", 
+    answer: (new Date().getMonth() === 1 && new Date().getDate() === 14) ? true : false 
+    },
+    { text: "Don't press!", answer: false },
+    { text: "Press if you want a kiss", answer: true },
+    { text: "Last one: PRESS AT LEAST 100 TIMES!", minPresses: 50, time: 10 }, // DONE
 
 ];
 
