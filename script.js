@@ -80,9 +80,11 @@ muteButton.addEventListener('click', () => {
     
     if (isMuted) {
         bgMusic.muted = false;
+        pressSound.muted = false;
         isMuted = false;
     } else {
         bgMusic.muted = true;
+        pressSound.muted = true;
         isMuted = true;
     }
 });
